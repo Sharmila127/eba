@@ -1,18 +1,22 @@
-# Use a stable Node.js image
-FROM node:20-bullseye
+# Use official Node.js 20 image (slim for smaller size)
+FROM node:20-bullseye-slim
 
+# Set working directory
 WORKDIR /app
 
-# Copy package files first
+# Copy package.json and package-lock.json first for caching
 COPY package*.json ./
 
-# Clean cache & install dependencies
-RUN npm cache clean --force
-RUN npm install --production --legacy-peer-deps
+# Configure npm to avoid integrity errors and use legacy peer deps
+RUN npm config set registry https://registry.npmjs.org/ \
+    && npm cache clean --force \
+    && npm install --production --legacy-peer-deps --force
 
-# Copy rest of app
+# Copy the rest of the application
 COPY . .
 
+# Expose the port your app runs on
 EXPOSE 3000
 
-CMD ["node", "index.js"]
+# Start the application
+CMD ["node", "main-app.js"]
