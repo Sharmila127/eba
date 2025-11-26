@@ -3,7 +3,10 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --production
+
+# Clean cache & install dependencies
+RUN npm cache clean --force
+RUN npm install --production --legacy-peer-deps
 
 COPY . .
 
